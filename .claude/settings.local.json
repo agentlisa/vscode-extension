@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pnpm init:*)",
+      "Bash(mkdir:*)",
+      "Bash(pnpm install:*)",
+      "Bash(pnpm run:*)",
+      "WebFetch(domain:localhost)",
+      "Bash(find:*)",
+      "Bash(mv:*)",
+      "WebFetch(domain:al.dengpeng.info)",
+      "Bash(pnpm add:*)"
+    ],
+    "deny": []
+  }
+}

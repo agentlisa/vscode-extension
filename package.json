@@ -1,0 +1,171 @@
+{
+  "name": "agentlisa-vscode-extension",
+  "displayName": "AgentLISA VSCode Extension",
+  "description": "Scan Solidity smart contracts for security vulnerabilities using AgentLISA",
+  "version": "0.0.1",
+  "publisher": "agentlisa",
+  "icon": "images/icon.png",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/agentlisa/vscode-extension.git"
+  },
+  "bugs": {
+    "url": "https://github.com/agentlisa/vscode-extension/issues"
+  },
+  "homepage": "https://github.com/agentlisa/vscode-extension#readme",
+  "keywords": [
+    "solidity",
+    "smart contracts",
+    "security",
+    "vulnerability scanner",
+    "blockchain",
+    "agentlisa"
+  ],
+  "engines": {
+    "vscode": "^1.99.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onLanguage:solidity"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "agentlisa.scanFiles",
+        "title": "Start LISA Security Scan",
+        "category": "AgentLISA"
+      },
+      {
+        "command": "agentlisa.showResults",
+        "title": "Show LISA Scan Results",
+        "category": "AgentLISA"
+      },
+      {
+        "command": "agentlisa.authenticate",
+        "title": "Authenticate with LISA",
+        "category": "AgentLISA"
+      },
+      {
+        "command": "agentlisa.removeScanResult",
+        "title": "Remove Scan Result",
+        "category": "AgentLISA",
+        "icon": "$(trash)"
+      },
+      {
+        "command": "agentlisa.removeAllScanResults",
+        "title": "Remove All Scan Results",
+        "category": "AgentLISA",
+        "icon": "$(clear-all)"
+      }
+    ],
+    "menus": {
+      "explorer/context": [
+        {
+          "command": "agentlisa.scanFiles",
+          "when": "resourceExtname == .sol",
+          "group": "agentlisa"
+        }
+      ],
+      "editor/context": [
+        {
+          "command": "agentlisa.scanFiles",
+          "when": "resourceExtname == .sol",
+          "group": "agentlisa"
+        }
+      ],
+      "view/title": [
+        {
+          "command": "agentlisa.removeAllScanResults",
+          "when": "view == agentlisaResults",
+          "group": "navigation"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "agentlisa.removeScanResult",
+          "when": "view == agentlisaResults && viewItem == scanResult",
+          "group": "inline"
+        }
+      ]
+    },
+    "views": {
+      "explorer": [
+        {
+          "id": "agentlisaResults",
+          "name": "LISA Scan Results",
+          "when": "agentlisa.hasResults"
+        }
+      ]
+    },
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "agentlisa",
+          "title": "AgentLISA",
+          "icon": "$(shield)"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "AgentLISA",
+      "properties": {
+        "agentlisa.baseUrl": {
+          "type": "string",
+          "default": "",
+          "description": "Base URL for the AgentLISA"
+        },
+        "agentlisa.pollingInterval": {
+          "type": "number",
+          "default": 30000,
+          "description": "Polling interval for scan status updates (in milliseconds)"
+        },
+        "agentlisa.pollingTimeout": {
+          "type": "number",
+          "default": 1200000,
+          "description": "Maximum time to wait for scan completion (in milliseconds)"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "pnpm run esbuild-base --minify",
+    "esbuild-base": "node esbuild.config.js",
+    "esbuild": "pnpm run esbuild-base --sourcemap",
+    "esbuild-watch": "pnpm run esbuild-base --sourcemap --watch",
+    "compile": "pnpm run esbuild",
+    "watch": "pnpm run esbuild-watch",
+    "pretest": "pnpm run compile && pnpm run lint",
+    "lint": "eslint src --ext ts",
+    "test": "node ./out/test/runTest.js",
+    "package": "vsce package --no-dependencies",
+    "publish": "vsce publish",
+    "install:vsix": "code --install-extension *.vsix",
+    "changeset": "changeset",
+    "changeset:version": "changeset version",
+    "changeset:publish": "pnpm run compile && changeset publish",
+    "release": "pnpm run compile && pnpm run package && pnpm run publish"
+  },
+  "devDependencies": {
+    "@changesets/cli": "^2.29.5",
+    "@types/markdown-it": "^14.1.2",
+    "@types/node": "~16.18.126",
+    "@types/uuid": "^10.0.0",
+    "@types/vscode": "^1.99.0",
+    "@typescript-eslint/eslint-plugin": "^5.62.0",
+    "@typescript-eslint/parser": "^5.62.0",
+    "@vscode/vsce": "^3.6.0",
+    "dotenv": "^17.2.1",
+    "esbuild": "^0.25.8",
+    "eslint": "^8.57.1",
+    "typescript": "^4.9.5"
+  },
+  "author": "Peng Deng",
+  "license": "MIT",
+  "dependencies": {
+    "markdown-it": "^14.1.0",
+    "uuid": "^11.1.0"
+  }
+}
