@@ -100,8 +100,15 @@ The workflow automatically selects the environment based on branch:
 - `main` branch → Uses `prod` environment
 - Other branches → Uses `dev` environment
 
-**4. Repository-level Secrets (Optional):**
-You can also set repository-level secrets as fallbacks in Settings → Secrets and variables → Actions
+**4. Repository Permissions:**
+Enable GitHub Actions write permissions:
+- Go to Settings → Actions → General
+- Under "Workflow permissions", select "Read and write permissions"
+- Check "Allow GitHub Actions to create and approve pull requests"
+
+**5. Repository-level Secrets (Optional):**
+You can also set repository-level secrets as fallbacks in Settings → Secrets and variables → Actions:
+- `GITHUB_PAT`: Personal Access Token with repo permissions (fallback if default token has issues)
 
 ### Manual Release Commands
 
