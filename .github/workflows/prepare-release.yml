@@ -49,13 +49,6 @@ jobs:
         env:
           CLIENT_ID: ${{ secrets.CLIENT_ID }}
 
-      - name: Setup VSCE authentication
-        run: |
-          # Configure VSCE with marketplace token
-          npx vsce login AgentLISA --pat $VSCE_PAT
-        env:
-          VSCE_PAT: ${{ secrets.VSCE_PAT }}
-
       - name: Create Release Pull Request or Publish to VSCode Marketplace
         id: changesets
         uses: changesets/action@v1

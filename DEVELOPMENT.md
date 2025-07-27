@@ -91,6 +91,8 @@ The automated release workflow uses GitHub Environments for environment-specific
 Each environment should have these secrets:
 - `CLIENT_ID`: OAuth Client ID (different value per environment)
 - `VSCE_PAT`: Personal Access Token for VS Code Marketplace publishing
+  - Generate at: https://marketplace.visualstudio.com/manage/publishers/agentlisa
+  - VSCE automatically uses this environment variable for authentication
 - `GITHUB_TOKEN`: Automatically provided by GitHub Actions
 
 **3. Environment Selection:**
