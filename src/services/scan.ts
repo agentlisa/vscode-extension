@@ -30,15 +30,21 @@ export class ScanService {
     return config.get("pollingTimeout") || 1200000; // default 20 minutes
   }
 
-  constructor(private authService: AuthService, context: vscode.ExtensionContext) {
+  constructor(
+    private authService: AuthService,
+    context: vscode.ExtensionContext
+  ) {
     this.context = context;
     this.baseUrl = this.getBaseUrl();
-    this.statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 100);
+    this.statusBarItem = vscode.window.createStatusBarItem(
+      vscode.StatusBarAlignment.Left,
+      100
+    );
     this.statusBarItem.command = "agentlisa.showResults";
-    
+
     // Load persisted scan results
     this.loadScanResults();
-    
+
     this.updateStatusBar();
   }
 
@@ -51,32 +57,36 @@ export class ScanService {
     );
   }
 
-  private generateScanTitle(files: ScanFile[], metadata?: ScanMetadata): string {
+  private generateScanTitle(
+    files: ScanFile[],
+    metadata?: ScanMetadata
+  ): string {
     // Get context name - prioritize project name over workspace name
-    const contextName = metadata?.projectName || metadata?.workspaceName || "Unknown Project";
-    
+    const contextName =
+      metadata?.projectName || metadata?.workspaceName || "Unknown Project";
+
     if (files.length === 1) {
-      // Single file: "<project name> / <file name>"
+      // Single file: "<project name> - <file name>"
       const fileName = this.getDisplayFileName(files[0].path);
-      return `${contextName} / ${fileName}`;
+      return `${contextName} - ${fileName}`;
     } else {
-      // Multiple files: "<project name> / <file1> and x other files"
+      // Multiple files: "<project name> - <file1> and x other files"
       const firstFileName = this.getDisplayFileName(files[0].path);
       const otherFilesCount = files.length - 1;
-      
+
       if (otherFilesCount === 1) {
-        return `${contextName} / ${firstFileName} and 1 other file`;
+        return `${contextName} - ${firstFileName} and 1 other file`;
       } else {
-        return `${contextName} / ${firstFileName} and ${otherFilesCount} other files`;
+        return `${contextName} - ${firstFileName} and ${otherFilesCount} other files`;
       }
     }
   }
 
   private getDisplayFileName(filePath: string): string {
     // Extract filename from path and handle directory context
-    const parts = filePath.split('/');
+    const parts = filePath.split("/");
     const fileName = parts[parts.length - 1];
-    
+
     // If file is in a subdirectory, show some context
     if (parts.length > 1) {
       const parentDir = parts[parts.length - 2];
@@ -86,12 +96,12 @@ export class ScanService {
       }
       return `${parentDir}/${fileName}`;
     }
-    
+
     // Truncate very long filenames
     if (fileName.length > 30) {
       return `...${fileName.slice(-27)}`;
     }
-    
+
     return fileName;
   }
 
@@ -172,7 +182,11 @@ export class ScanService {
       this.startPolling(scanId);
 
       // Make view visible immediately when scan starts
-      vscode.commands.executeCommand("setContext", "agentlisa.hasResults", true);
+      vscode.commands.executeCommand(
+        "setContext",
+        "agentlisa.hasResults",
+        true
+      );
       this.updateStatusBar();
 
       return scanId;
@@ -202,18 +216,22 @@ export class ScanService {
     if (result) {
       // Stop polling if this scan was active
       this.stopPolling(scanId);
-      
+
       // Save updated results to workspace state
       await this.saveScanResults();
-      
+
       // Update context to hide results view if no results left
       if (this.scanResults.size === 0) {
-        vscode.commands.executeCommand("setContext", "agentlisa.hasResults", false);
+        vscode.commands.executeCommand(
+          "setContext",
+          "agentlisa.hasResults",
+          false
+        );
       }
-      
+
       // Trigger UI refresh
       this.onScanUpdateCallback?.();
-      
+
       console.log(`Removed scan result: ${scanId}`);
     }
     return result;
@@ -221,24 +239,24 @@ export class ScanService {
 
   public async removeAllScanResults(): Promise<void> {
     const count = this.scanResults.size;
-    
+
     // Stop all active polling
     for (const scanId of this.scanResults.keys()) {
       this.stopPolling(scanId);
     }
-    
+
     // Clear all results
     this.scanResults.clear();
-    
+
     // Save empty state to workspace
     await this.saveScanResults();
-    
+
     // Update context to hide results view
     vscode.commands.executeCommand("setContext", "agentlisa.hasResults", false);
-    
+
     // Trigger UI refresh
     this.onScanUpdateCallback?.();
-    
+
     console.log(`Removed all ${count} scan results`);
   }
 
@@ -248,25 +266,31 @@ export class ScanService {
 
   private async loadScanResults(): Promise<void> {
     try {
-      const storedResults = this.context.workspaceState.get<Record<string, ScanResult>>(ScanService.STORAGE_KEY);
+      const storedResults = this.context.workspaceState.get<
+        Record<string, ScanResult>
+      >(ScanService.STORAGE_KEY);
       if (storedResults) {
         // Convert stored object back to Map
         for (const [scanId, scanResult] of Object.entries(storedResults)) {
           this.scanResults.set(scanId, scanResult);
         }
         console.log(`Loaded ${this.scanResults.size} persisted scan results`);
-        
+
         // Clean up old results in case storage has more than the limit
         // (e.g., from before the limit was implemented)
         this.cleanupOldResults();
-        
+
         // Update context to show results if any exist
         if (this.scanResults.size > 0) {
-          vscode.commands.executeCommand("setContext", "agentlisa.hasResults", true);
+          vscode.commands.executeCommand(
+            "setContext",
+            "agentlisa.hasResults",
+            true
+          );
         }
       }
     } catch (error) {
-      console.error('Error loading persisted scan results:', error);
+      console.error("Error loading persisted scan results:", error);
       // Continue without persisted results if there's an error
     }
   }
@@ -278,36 +302,47 @@ export class ScanService {
 
     // Get all results sorted by creation date (newest first)
     const sortedResults = Array.from(this.scanResults.entries()).sort(
-      ([, a], [, b]) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      ([, a], [, b]) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
     );
 
     // Keep only the most recent MAX_STORED_RESULTS
-    const resultsToKeep = sortedResults.slice(0, ScanService.MAX_STORED_RESULTS);
-    
+    const resultsToKeep = sortedResults.slice(
+      0,
+      ScanService.MAX_STORED_RESULTS
+    );
+
     // Clear the map and repopulate with recent results only
     this.scanResults.clear();
     for (const [scanId, scanResult] of resultsToKeep) {
       this.scanResults.set(scanId, scanResult);
     }
 
-    console.log(`Cleaned up old scan results. Kept ${this.scanResults.size} most recent results.`);
+    console.log(
+      `Cleaned up old scan results. Kept ${this.scanResults.size} most recent results.`
+    );
   }
 
   private async saveScanResults(): Promise<void> {
     try {
       // Clean up old results before saving
       this.cleanupOldResults();
-      
+
       // Convert Map to plain object for storage
       const resultsToStore: Record<string, ScanResult> = {};
       for (const [scanId, scanResult] of this.scanResults.entries()) {
         resultsToStore[scanId] = scanResult;
       }
-      
-      await this.context.workspaceState.update(ScanService.STORAGE_KEY, resultsToStore);
-      console.log(`Saved ${this.scanResults.size} scan results to workspace state`);
+
+      await this.context.workspaceState.update(
+        ScanService.STORAGE_KEY,
+        resultsToStore
+      );
+      console.log(
+        `Saved ${this.scanResults.size} scan results to workspace state`
+      );
     } catch (error) {
-      console.error('Error saving scan results to workspace state:', error);
+      console.error("Error saving scan results to workspace state:", error);
     }
   }
 
@@ -425,27 +460,38 @@ export class ScanService {
   private async handleScanCompletion(result: ScanResult): Promise<void> {
     if (result.status === "completed") {
       const issueCount = result.result.length;
-      
+
       // Create proper scan results summary by severity
       const severityCounts = result.result.reduce((acc, issue) => {
         acc[issue.severity] = (acc[issue.severity] || 0) + 1;
         return acc;
       }, {} as Record<string, number>);
-      
+
       let message: string;
       if (issueCount === 0) {
         message = "Scan completed: No issues found";
       } else {
-        const severityOrder = ['CRITICAL', 'HIGH', 'MEDIUM', 'LOW', 'WARN', 'INFORMATIONAL'];
+        const severityOrder = [
+          "CRITICAL",
+          "HIGH",
+          "MEDIUM",
+          "LOW",
+          "WARN",
+          "INFORMATIONAL",
+        ];
         const summaryParts: string[] = [];
-        
+
         for (const severity of severityOrder) {
           if (severityCounts[severity]) {
-            summaryParts.push(`${severityCounts[severity]} ${severity.toLowerCase()}`);
+            summaryParts.push(
+              `${severityCounts[severity]} ${severity.toLowerCase()}`
+            );
           }
         }
-        
-        message = `Scan completed: ${issueCount} issue${issueCount === 1 ? "" : "s"} found (${summaryParts.join(', ')})`;
+
+        message = `Scan completed: ${issueCount} issue${
+          issueCount === 1 ? "" : "s"
+        } found (${summaryParts.join(", ")})`;
       }
 
       const action = await vscode.window.showInformationMessage(
@@ -468,10 +514,14 @@ export class ScanService {
 
   private updateStatusBar(): void {
     const activeScanCount = this.activeScans.size;
-    
+
     if (activeScanCount > 0) {
-      this.statusBarItem.text = `$(loading~spin) LISA: ${activeScanCount} scan${activeScanCount > 1 ? 's' : ''} running`;
-      this.statusBarItem.tooltip = `${activeScanCount} AgentLISA scan${activeScanCount > 1 ? 's' : ''} in progress. Click to view details.`;
+      this.statusBarItem.text = `$(loading~spin) LISA: ${activeScanCount} scan${
+        activeScanCount > 1 ? "s" : ""
+      } running`;
+      this.statusBarItem.tooltip = `${activeScanCount} AgentLISA scan${
+        activeScanCount > 1 ? "s" : ""
+      } in progress. Click to view details.`;
       this.statusBarItem.show();
     } else {
       this.statusBarItem.hide();

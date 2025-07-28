@@ -15,20 +15,44 @@ export function activate(context: vscode.ExtensionContext) {
     scanResultsProvider.refresh();
   });
 
+  // Common scan logic
+  const performScan = async (filesToScan: vscode.Uri[]) => {
+    if (!authService.isAuthenticated()) {
+      const authenticated = await authService.authenticate();
+      if (!authenticated) {
+        vscode.window.showErrorMessage(
+          "Authentication failed. Please try again."
+        );
+        return;
+      }
+    }
+
+    const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
+    const projectName = workspaceFolder?.name || "Unknown Project";
+    const workspaceName = vscode.workspace.name || "Unknown Workspace";
+
+    const scanId = await scanService.startScan(filesToScan, {
+      projectName,
+      workspaceName,
+    });
+
+    if (scanId) {
+      scanResultsProvider.refresh();
+      const action = await vscode.window.showInformationMessage(
+        `Scan started for ${filesToScan.length} file${filesToScan.length > 1 ? 's' : ''}. Track progress in LISA Scan Results.`,
+        "Show Progress"
+      );
+      
+      if (action === "Show Progress") {
+        vscode.commands.executeCommand("agentlisa.showResults");
+      }
+    }
+  };
+
   const scanFilesCommand = vscode.commands.registerCommand(
     "agentlisa.scanFiles",
     async (uri: vscode.Uri) => {
       try {
-        if (!authService.isAuthenticated()) {
-          const authenticated = await authService.authenticate();
-          if (!authenticated) {
-            vscode.window.showErrorMessage(
-              "Authentication failed. Please try again."
-            );
-            return;
-          }
-        }
-
         let filesToScan: vscode.Uri[] = [];
 
         if (uri) {
@@ -48,26 +72,28 @@ export function activate(context: vscode.ExtensionContext) {
           filesToScan = files;
         }
 
-        const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
-        const projectName = workspaceFolder?.name || "Unknown Project";
-        const workspaceName = vscode.workspace.name || "Unknown Workspace";
+        await performScan(filesToScan);
+      } catch (error) {
+        vscode.window.showErrorMessage(`Failed to start scan: ${error}`);
+      }
+    }
+  );
 
-        const scanId = await scanService.startScan(filesToScan, {
-          projectName,
-          workspaceName,
-        });
+  const scanMultipleFilesCommand = vscode.commands.registerCommand(
+    "agentlisa.scanMultipleFiles",
+    async (uri: vscode.Uri, allSelectedUris: vscode.Uri[]) => {
+      try {
+        // Filter to only include .sol files from the selection
+        const solFiles = allSelectedUris.filter(file => 
+          file.fsPath.toLowerCase().endsWith('.sol')
+        );
 
-        if (scanId) {
-          scanResultsProvider.refresh();
-          const action = await vscode.window.showInformationMessage(
-            `Scan started for ${filesToScan.length} file${filesToScan.length > 1 ? 's' : ''}. Track progress in LISA Scan Results.`,
-            "Show Progress"
-          );
-          
-          if (action === "Show Progress") {
-            vscode.commands.executeCommand("agentlisa.showResults");
-          }
+        if (solFiles.length === 0) {
+          vscode.window.showWarningMessage("No Solidity files selected for scanning.");
+          return;
         }
+
+        await performScan(solFiles);
       } catch (error) {
         vscode.window.showErrorMessage(`Failed to start scan: ${error}`);
       }
@@ -201,6 +227,7 @@ export function activate(context: vscode.ExtensionContext) {
 
   context.subscriptions.push(
     scanFilesCommand,
+    scanMultipleFilesCommand,
     showResultsCommand,
     viewScanResultCommand,
     viewIssueDetailsCommand,

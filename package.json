@@ -59,6 +59,11 @@
         "title": "Remove All Scan Results",
         "category": "AgentLISA",
         "icon": "$(clear-all)"
+      },
+      {
+        "command": "agentlisa.scanMultipleFiles",
+        "title": "Start LISA Security Scan (Multiple Files)",
+        "category": "AgentLISA"
       }
     ],
     "menus": {
@@ -66,6 +71,11 @@
         {
           "command": "agentlisa.scanFiles",
           "when": "resourceExtname == .sol",
+          "group": "agentlisa"
+        },
+        {
+          "command": "agentlisa.scanMultipleFiles",
+          "when": "listMultiSelection && resourceExtname == .sol",
           "group": "agentlisa"
         }
       ],
