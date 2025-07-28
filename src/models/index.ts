@@ -32,11 +32,11 @@ export interface ScanStartErrorResponse {
 export type ScanStartResponse = ScanStartSuccessResponse | ScanStartErrorResponse;
 
 export interface ScanResultRange {
-  start: {
+  start?: {
     line: number;
     column: number;
   };
-  end: {
+  end?: {
     line: number;
     column: number;
   };
@@ -44,7 +44,7 @@ export interface ScanResultRange {
 
 export interface ScanResultAffectedFile {
   filePath: string;
-  range: ScanResultRange;
+  range?: ScanResultRange;
 }
 
 export interface ScanResultIssue {
