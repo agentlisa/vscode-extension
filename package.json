@@ -3,7 +3,7 @@
   "displayName": "AgentLISA VSCode Extension",
   "description": "Scan Solidity smart contracts for security vulnerabilities using AgentLISA",
   "version": "0.1.0",
-  "publisher": "agentlisa",
+  "publisher": "AgentLISA",
   "icon": "images/icon.png",
   "repository": {
     "type": "git",
@@ -19,12 +19,15 @@
     "security",
     "vulnerability scanner",
     "blockchain",
-    "agentlisa"
+    "agentlisa",
+    "LISA"
   ],
   "engines": {
     "vscode": "^1.99.0"
   },
   "categories": [
+    "Linters",
+    "Testing",
     "Other"
   ],
   "activationEvents": [
