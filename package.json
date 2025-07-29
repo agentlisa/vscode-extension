@@ -3,6 +3,7 @@
   "displayName": "AgentLISA VSCode Extension",
   "description": "Perform smart contract security analysis using AgentLISA directly from VSCode.",
   "version": "0.1.1",
+  "private": true,
   "publisher": "AgentLISA",
   "icon": "images/icon.png",
   "repository": {
@@ -158,12 +159,10 @@
     "lint": "eslint src --ext ts",
     "test": "node ./out/test/runTest.js",
     "package": "vsce package --no-dependencies",
-    "publish": "vsce publish --no-dependencies",
     "install:vsix": "code --install-extension *.vsix",
     "changeset": "changeset",
     "changeset:version": "changeset version",
-    "changeset:publish": "pnpm run compile && changeset publish",
-    "release": "pnpm run compile && pnpm run package && pnpm run publish"
+    "changeset:publish": "pnpm run compile && pnpm run package && pnpm run publish && changeset publish"
   },
   "devDependencies": {
     "@changesets/cli": "^2.29.5",
