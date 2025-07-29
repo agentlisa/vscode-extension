@@ -1,5 +1,11 @@
 # agentlisa-vscode-extension
 
+## 0.1.2
+
+### Patch Changes
+
+- 2b5f974: chore: adjust publish script
+
 ## 0.1.1
 
 ### Patch Changes
