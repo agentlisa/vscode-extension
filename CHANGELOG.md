@@ -1,5 +1,11 @@
 # agentlisa-vscode-extension
 
+## 0.1.3
+
+### Patch Changes
+
+- fd9b158: chore: adjust publishing process
+
 ## 0.1.2
 
 ### Patch Changes
