@@ -1,7 +1,7 @@
 {
   "name": "agentlisa-vscode-extension",
   "displayName": "AgentLISA VSCode Extension",
-  "description": "Scan Solidity smart contracts for security vulnerabilities using AgentLISA",
+  "description": "Perform smart contract security analysis using AgentLISA directly from VSCode.",
   "version": "0.1.0",
   "publisher": "AgentLISA",
   "icon": "images/icon.png",
@@ -14,11 +14,15 @@
   },
   "homepage": "https://github.com/agentlisa/vscode-extension#readme",
   "keywords": [
+    "smart contract",
+    "security analysis",
     "solidity",
-    "smart contracts",
-    "security",
-    "vulnerability scanner",
+    "rust",
+    "LLM",
+    "AI",
     "blockchain",
+    "EVM",
+    "agent",
     "agentlisa",
     "LISA"
   ],
