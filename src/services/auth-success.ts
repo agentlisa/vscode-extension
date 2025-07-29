@@ -196,7 +196,7 @@ export const AUTH_SUCCESS_HTML = `<html encoding="UTF-8">
       </p>
     </div>
     <script>
-      // setTimeout(() => window.close(), 3000);
+      setTimeout(() => window.close(), 3000);
     </script>
   </body>
 </html>`;
