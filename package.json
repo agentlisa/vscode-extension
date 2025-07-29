@@ -2,7 +2,7 @@
   "name": "agentlisa-vscode-extension",
   "displayName": "AgentLISA VSCode Extension",
   "description": "Perform smart contract security analysis using AgentLISA directly from VSCode.",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "publisher": "AgentLISA",
   "icon": "images/icon.png",
   "repository": {

@@ -1,5 +1,14 @@
 # agentlisa-vscode-extension
 
+## 0.1.1
+
+### Patch Changes
+
+- 809186d: chore: update project info in manifest
+- 809186d: fix: fix multi-file scanning
+- 809186d: fix: support display issues with unspecified file range
+- 157bed2: fix: fix publish script
+
 ## 0.1.0
 
 ### Minor Changes
