@@ -1,5 +1,11 @@
 # agentlisa-vscode-extension
 
+## 0.1.4
+
+### Patch Changes
+
+- 30a501a: fix: fix a minor issue in the authentication process
+
 ## 0.1.3
 
 ### Patch Changes
