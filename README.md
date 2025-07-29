@@ -2,6 +2,9 @@
 
 A VSCode extension that integrates with AgentLISA online security scanning service to analyze Solidity smart contracts for vulnerabilities and security issues.
 
+- Agent LISA Website: https://agentlisa.ai
+- Extension Documentation: https://agentlisa.ai/docs/vscode-extension
+
 ## Features
 
 - **Selective File Scanning**: Select one or more Solidity files to scan for security vulnerabilities
